@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}About — Traffic Volume Prediction{% endblock %}
+
+{% block content %}
+<section class="section about-section">
+    <div class="container">
+        <h1 class="page-title">About This Project</h1>
+        <p class="page-subtitle">
+            A machine learning–powered traffic volume prediction system developed as a B.Tech Civil Engineering project.
+        </p>
+
+        <!-- Project Description -->
+        <div class="about-card">
+            <h2 class="about-heading">🚦 Project Overview</h2>
+            <p>
+                The <strong>Traffic Volume Prediction System</strong> uses historical traffic and weather data to
+                predict the hourly traffic volume on a major interstate highway. By combining meteorological features
+                (temperature, precipitation, cloud cover) with temporal patterns (hour, day of week, month, holidays),
+                the system provides accurate traffic flow estimates that can support civil engineering decision-making.
+            </p>
+            <p>
+                This tool is designed for transportation engineers, urban planners, and researchers who need
+                data-driven insights into traffic behavior for road design, signal optimization, and capacity planning.
+            </p>
+        </div>
+
+        <!-- Dataset Information -->
+        <div class="about-card">
+            <h2 class="about-heading">📂 Dataset</h2>
+            <p>
+                The project uses the <strong>Metro Interstate Traffic Volume</strong> dataset from the
+                <a href="https://archive.ics.uci.edu/dataset/492/metro+interstate+traffic+volume" target="_blank" rel="noopener noreferrer">
+                    UCI Machine Learning Repository
+                </a>.
+            </p>
+            <ul class="about-list">
+                <li><strong>Source:</strong> Minnesota Department of Transportation (MnDOT)</li>
+                <li><strong>Location:</strong> Interstate 94 Westbound, Minneapolis–St. Paul, MN</li>
+                <li><strong>Period:</strong> 2012 – 2018</li>
+                <li><strong>Records:</strong> ~48,000 hourly observations</li>
+                <li><strong>Target Variable:</strong> Traffic volume (vehicles/hour)</li>
+                <li><strong>Features:</strong> Temperature, rain, snow, cloud cover, holiday flag, date/time</li>
+            </ul>
+        </div>
+
+        <!-- Model Information -->
+        <div class="about-card">
+            <h2 class="about-heading">🤖 Machine Learning Model</h2>
+            <p>
+                The prediction model is built using <strong>Linear Regression</strong> from scikit-learn.
+                While simple, linear regression provides interpretable coefficients and a solid baseline
+                for understanding the relationship between input features and traffic volume.
+            </p>
+            <ul class="about-list">
+                <li><strong>Algorithm:</strong> Ordinary Least Squares (OLS) Linear Regression</li>
+                <li><strong>Library:</strong> scikit-learn</li>
+                <li><strong>Train/Test Split:</strong> 80% training / 20% testing</li>
+                <li><strong>Evaluation Metrics:</strong> MAE, RMSE, R² Score</li>
+                <li><strong>Feature Engineering:</strong> Hour, day-of-week, month, weekend flag extracted from timestamps</li>
+            </ul>
+        </div>
+
+        <!-- Technologies Used -->
+        <div class="about-card">
+            <h2 class="about-heading">🛠️ Technologies Used</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">🐍</div>
+                    <h4>Python</h4>
+                    <p>Core programming language for data processing and model training</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🌐</div>
+                    <h4>Flask</h4>
+                    <p>Lightweight web framework for serving the application and API endpoints</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🧠</div>
+                    <h4>scikit-learn</h4>
+                    <p>Machine learning library for model training, evaluation, and predictions</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">📊</div>
+                    <h4>Chart.js</h4>
+                    <p>Interactive JavaScript charting library for data visualization</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🐼</div>
+                    <h4>Pandas &amp; NumPy</h4>
+                    <p>Data manipulation and numerical computing libraries</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🎨</div>
+                    <h4>HTML / CSS / JS</h4>
+                    <p>Responsive front-end interface with modern design</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Structure -->
+        <div class="about-card">
+            <h2 class="about-heading">📁 Project Structure</h2>
+            <pre class="project-tree"><code>traffic-volume-prediction/
+├── app.py                  # Flask application & API routes
+├── model.py                # Model training & prediction logic
+├── train_model.py          # Script to train and save the model
+├── requirements.txt        # Python dependencies
+├── data/
+│   └── Metro_Interstate_Traffic_Volume.csv
+├── models/
+│   ├── model.pkl           # Trained model (pickle)
+│   └── scaler.pkl          # Feature scaler (pickle)
+├── static/
+│   ├── css/
+│   │   └── style.css       # Application styles
+│   └── js/
+│       └── main.js         # Shared JavaScript utilities
+├── templates/
+│   ├── base.html           # Base layout template
+│   ├── index.html          # Home page
+│   ├── predict.html        # Prediction form
+│   ├── dashboard.html      # Analytics dashboard
+│   └── about.html          # About page
+└── notebooks/
+    └── analysis.ipynb      # Data exploration notebook</code></pre>
+        </div>
+
+        <!-- Civil Engineering Applications -->
+        <div class="about-card">
+            <h2 class="about-heading">🏗️ Civil Engineering Applications</h2>
+            <p>
+                Accurate traffic volume prediction is critical for numerous aspects of civil and transportation engineering:
+            </p>
+            <div class="applications-grid">
+                <div class="application-item">
+                    <h4>🛣️ Road Design &amp; Capacity</h4>
+                    <p>Determine the number of lanes, pavement thickness, and geometric design based on predicted traffic loads.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🚦 Signal Optimization</h4>
+                    <p>Optimize traffic signal timings and phasing plans using predicted hourly traffic flows at intersections.</p>
+                </div>
+                <div class="application-item">
+                    <h4>📋 Transportation Planning</h4>
+                    <p>Support long-range infrastructure planning by forecasting future traffic growth patterns.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🔧 Maintenance Scheduling</h4>
+                    <p>Schedule road maintenance and construction during low-traffic periods to minimize disruption.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🌍 Environmental Impact</h4>
+                    <p>Estimate vehicle emissions and noise pollution levels for environmental impact assessments.</p>
+                </div>
+                <div class="application-item">
+                    <h4>💰 Economic Analysis</h4>
+                    <p>Evaluate cost-benefit ratios for proposed highway improvements using traffic volume projections.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Information -->
+        <div class="about-card">
+            <h2 class="about-heading">👨‍🎓 Project Team</h2>
+            <div class="team-info">
+                <p><strong>Department:</strong> Civil Engineering</p>
+                <p><strong>Degree:</strong> Bachelor of Technology (B.Tech)</p>
+                <p><strong>Project Type:</strong> Final Year / Minor Project</p>
+                <hr class="about-divider">
+                <p class="team-placeholder">
+                    <em>Student name(s), roll number(s), and supervisor details can be added here.</em>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

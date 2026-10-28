@@ -1,0 +1,417 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Traffic Volume Prediction{% endblock %}
+
+{% block content %}
+<section class="section dashboard-section">
+    <div class="container">
+        <h1 class="page-title">Model Dashboard</h1>
+        <p class="page-subtitle">
+            Explore model performance metrics and interactive traffic pattern visualizations.
+        </p>
+
+        <!-- Model Performance Metrics -->
+        <div class="metrics-panel">
+            <h2 class="panel-title">📊 Model Performance</h2>
+            <div class="metrics-grid" id="metricsGrid">
+                <!-- Training Metrics -->
+                <div class="metric-card metric-train">
+                    <h4 class="metric-heading">Training Set</h4>
+                    <div class="metric-item">
+                        <span class="metric-label">MAE</span>
+                        <span class="metric-value" id="trainMAE">—</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RMSE</span>
+                        <span class="metric-value" id="trainRMSE">—</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">R² Score</span>
+                        <span class="metric-value" id="trainR2">—</span>
+                    </div>
+                </div>
+
+                <!-- Test Metrics -->
+                <div class="metric-card metric-test">
+                    <h4 class="metric-heading">Test Set</h4>
+                    <div class="metric-item">
+                        <span class="metric-label">MAE</span>
+                        <span class="metric-value" id="testMAE">—</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RMSE</span>
+                        <span class="metric-value" id="testRMSE">—</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">R² Score</span>
+                        <span class="metric-value" id="testR2">—</span>
+                    </div>
+                </div>
+            </div>
+            <div id="metricsError" class="dashboard-error" style="display: none;">
+                <p>⚠️ Could not load model metrics.</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-panel">
+            <h2 class="panel-title">📈 Traffic Pattern Analysis</h2>
+
+            <div id="chartsError" class="dashboard-error" style="display: none;">
+                <p>⚠️ Could not load analysis data for charts.</p>
+            </div>
+
+            <div class="charts-grid">
+                <!-- Hourly Average Traffic Volume -->
+                <div class="chart-card">
+                    <h4 class="chart-title">Hourly Average Traffic Volume</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="hourlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Traffic by Day of Week -->
+                <div class="chart-card">
+                    <h4 class="chart-title">Traffic by Day of Week</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="dailyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Traffic by Month -->
+                <div class="chart-card">
+                    <h4 class="chart-title">Traffic by Month</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Traffic Volume Distribution -->
+                <div class="chart-card">
+                    <h4 class="chart-title">Traffic Volume Distribution</h4>
+                    <div class="chart-wrapper">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Actual vs Predicted -->
+                <div class="chart-card chart-card-wide">
+                    <h4 class="chart-title">Actual vs Predicted Traffic Volume</h4>
+                    <div class="chart-wrapper chart-wrapper-wide">
+                        <canvas id="scatterChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    // ---- Color Palette ----
+    const COLORS = {
+        primary: 'rgba(0, 150, 136, 0.7)',       // Teal
+        primaryBorder: 'rgba(0, 150, 136, 1)',
+        secondary: 'rgba(25, 118, 210, 0.7)',     // Blue
+        secondaryBorder: 'rgba(25, 118, 210, 1)',
+        accent: 'rgba(255, 152, 0, 0.7)',         // Orange
+        accentBorder: 'rgba(255, 152, 0, 1)',
+        scatter: 'rgba(233, 30, 99, 0.5)',        // Pink
+        scatterBorder: 'rgba(233, 30, 99, 1)',
+        gridColor: 'rgba(200, 200, 200, 0.3)'
+    };
+
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                labels: { color: '#e0e0e0', font: { size: 12 } }
+            },
+            tooltip: {
+                backgroundColor: 'rgba(30, 40, 60, 0.95)',
+                titleColor: '#ffffff',
+                bodyColor: '#e0e0e0',
+                borderColor: 'rgba(0, 150, 136, 0.5)',
+                borderWidth: 1,
+                cornerRadius: 8,
+                padding: 10
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: '#b0bec5' },
+                grid: { color: COLORS.gridColor }
+            },
+            y: {
+                ticks: { color: '#b0bec5' },
+                grid: { color: COLORS.gridColor }
+            }
+        }
+    };
+
+    // ---- Load Model Metrics ----
+    async function loadMetrics() {
+        try {
+            const response = await fetch('/api/metrics');
+            if (!response.ok) throw new Error('Failed to load metrics');
+            const data = await response.json();
+
+            // Training metrics
+            if (data.train) {
+                document.getElementById('trainMAE').textContent = data.train.mae != null ? data.train.mae.toFixed(2) : '—';
+                document.getElementById('trainRMSE').textContent = data.train.rmse != null ? data.train.rmse.toFixed(2) : '—';
+                document.getElementById('trainR2').textContent = data.train.r2 != null ? data.train.r2.toFixed(4) : '—';
+            }
+
+            // Test metrics
+            if (data.test) {
+                document.getElementById('testMAE').textContent = data.test.mae != null ? data.test.mae.toFixed(2) : '—';
+                document.getElementById('testRMSE').textContent = data.test.rmse != null ? data.test.rmse.toFixed(2) : '—';
+                document.getElementById('testR2').textContent = data.test.r2 != null ? data.test.r2.toFixed(4) : '—';
+            }
+        } catch (err) {
+            console.error('Metrics load error:', err);
+            document.getElementById('metricsError').style.display = 'block';
+        }
+    }
+
+    // ---- Load Analysis Data & Build Charts ----
+    async function loadAnalysis() {
+        try {
+            const response = await fetch('/api/analysis');
+            if (!response.ok) throw new Error('Failed to load analysis data');
+            const data = await response.json();
+
+            buildHourlyChart(data.hourly);
+            buildDailyChart(data.daily);
+            buildMonthlyChart(data.monthly);
+            buildDistributionChart(data.distribution);
+            buildScatterChart(data.scatter);
+
+        } catch (err) {
+            console.error('Analysis load error:', err);
+            document.getElementById('chartsError').style.display = 'block';
+        }
+    }
+
+    // ---- Chart Builders ----
+
+    function buildHourlyChart(hourlyData) {
+        if (!hourlyData) return;
+        const ctx = document.getElementById('hourlyChart').getContext('2d');
+        const labels = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0') + ':00');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg Traffic Volume',
+                    data: hourlyData,
+                    backgroundColor: COLORS.primary,
+                    borderColor: COLORS.primaryBorder,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: { display: false }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        title: { display: true, text: 'Vehicles / Hour', color: '#b0bec5' }
+                    },
+                    x: {
+                        ...commonOptions.scales.x,
+                        title: { display: true, text: 'Hour of Day', color: '#b0bec5' }
+                    }
+                }
+            }
+        });
+    }
+
+    function buildDailyChart(dailyData) {
+        if (!dailyData) return;
+        const ctx = document.getElementById('dailyChart').getContext('2d');
+        const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg Traffic Volume',
+                    data: dailyData,
+                    backgroundColor: COLORS.secondary,
+                    borderColor: COLORS.secondaryBorder,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: { display: false }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        title: { display: true, text: 'Vehicles / Hour', color: '#b0bec5' }
+                    },
+                    x: {
+                        ...commonOptions.scales.x,
+                        title: { display: true, text: 'Day of Week', color: '#b0bec5' }
+                    }
+                }
+            }
+        });
+    }
+
+    function buildMonthlyChart(monthlyData) {
+        if (!monthlyData) return;
+        const ctx = document.getElementById('monthlyChart').getContext('2d');
+        const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Avg Traffic Volume',
+                    data: monthlyData,
+                    backgroundColor: COLORS.accent,
+                    borderColor: COLORS.accentBorder,
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: { display: false }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        title: { display: true, text: 'Vehicles / Hour', color: '#b0bec5' }
+                    },
+                    x: {
+                        ...commonOptions.scales.x,
+                        title: { display: true, text: 'Month', color: '#b0bec5' }
+                    }
+                }
+            }
+        });
+    }
+
+    function buildDistributionChart(distData) {
+        if (!distData) return;
+        const ctx = document.getElementById('distributionChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: distData.labels || [],
+                datasets: [{
+                    label: 'Frequency',
+                    data: distData.values || [],
+                    backgroundColor: 'rgba(126, 87, 194, 0.6)',
+                    borderColor: 'rgba(126, 87, 194, 1)',
+                    borderWidth: 1,
+                    borderRadius: 2
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: {
+                    ...commonOptions.plugins,
+                    legend: { display: false }
+                },
+                scales: {
+                    ...commonOptions.scales,
+                    y: {
+                        ...commonOptions.scales.y,
+                        title: { display: true, text: 'Frequency', color: '#b0bec5' }
+                    },
+                    x: {
+                        ...commonOptions.scales.x,
+                        title: { display: true, text: 'Traffic Volume Range', color: '#b0bec5' }
+                    }
+                }
+            }
+        });
+    }
+
+    function buildScatterChart(scatterData) {
+        if (!scatterData) return;
+        const ctx = document.getElementById('scatterChart').getContext('2d');
+
+        // Build scatter data points from parallel arrays
+        const points = [];
+        const actual = scatterData.actual || [];
+        const predicted = scatterData.predicted || [];
+        for (let i = 0; i < actual.length; i++) {
+            points.push({ x: actual[i], y: predicted[i] });
+        }
+
+        // Compute reference line (perfect predictions)
+        const allVals = actual.concat(predicted);
+        const minVal = Math.min(...allVals);
+        const maxVal = Math.max(...allVals);
+
+        new Chart(ctx, {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    {
+                        label: 'Predictions',
+                        data: points,
+                        backgroundColor: COLORS.scatter,
+                        borderColor: COLORS.scatterBorder,
+                        borderWidth: 1,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    },
+                    {
+                        label: 'Perfect Prediction',
+                        data: [{ x: minVal, y: minVal }, { x: maxVal, y: maxVal }],
+                        type: 'line',
+                        borderColor: 'rgba(76, 175, 80, 0.8)',
+                        borderWidth: 2,
+                        borderDash: [6, 4],
+                        pointRadius: 0,
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                scales: {
+                    x: {
+                        ...commonOptions.scales.x,
+                        title: { display: true, text: 'Actual Volume', color: '#b0bec5' }
+                    },
+                    y: {
+                        ...commonOptions.scales.y,
+                        title: { display: true, text: 'Predicted Volume', color: '#b0bec5' }
+                    }
+                }
+            }
+        });
+    }
+
+    // ---- Initialize Dashboard ----
+    loadMetrics();
+    loadAnalysis();
+})();
+</script>
+{% endblock %}

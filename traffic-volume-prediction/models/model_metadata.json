@@ -1,0 +1,19 @@
+{
+  "features": [
+    "temp",
+    "rain_1h",
+    "snow_1h",
+    "clouds_all",
+    "hour_sin",
+    "hour_cos",
+    "month_sin",
+    "month_cos",
+    "dow_sin",
+    "dow_cos",
+    "is_weekend",
+    "is_holiday"
+  ],
+  "model_type": "LinearRegression",
+  "training_date": "2026-10-29T01:57:13.422608",
+  "sklearn_version": "1.9.1"
+}

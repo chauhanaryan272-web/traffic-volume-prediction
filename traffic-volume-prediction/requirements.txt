@@ -1,0 +1,12 @@
+﻿# Traffic Volume Prediction System — Python Dependencies
+# Compatible with Python 3.8+ through Python 3.15.2+ on Windows/macOS/Linux
+# Uses flexible lower bounds so pip installs prebuilt binary wheels (*.whl)
+# without requiring Microsoft Visual C++ Build Tools or compilation from source.
+
+flask>=3.0.0
+pandas>=2.2.0
+numpy>=2.0.0
+scikit-learn>=1.4.0
+joblib>=1.3.0
+matplotlib>=3.8.0
+seaborn>=0.13.0

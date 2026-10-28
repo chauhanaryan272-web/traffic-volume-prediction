@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Predict — Traffic Volume Prediction{% endblock %}
+
+{% block content %}
+<section class="section predict-section">
+    <div class="container">
+        <h1 class="page-title">Predict Traffic Volume</h1>
+        <p class="page-subtitle">
+            Enter weather and temporal parameters below to get an estimated traffic volume prediction.
+        </p>
+
+        <div class="predict-layout">
+            <!-- Prediction Form -->
+            <div class="form-card">
+                <form id="predictForm" class="predict-form">
+                    <h3 class="form-section-title">🌤️ Weather Conditions</h3>
+
+                    <div class="form-group">
+                        <label for="temp">Temperature (°C)</label>
+                        <input type="number" id="temp" name="temp"
+                               step="0.1" min="-40" max="50" value="20"
+                               class="form-control" required>
+                        <small class="form-hint">Range: -40°C to 50°C</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rain">Rainfall (mm/h)</label>
+                        <input type="number" id="rain" name="rain"
+                               step="0.1" min="0" value="0"
+                               class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="snow">Snowfall (mm/h)</label>
+                        <input type="number" id="snow" name="snow"
+                               step="0.01" min="0" value="0"
+                               class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="clouds">Cloud Cover (%)</label>
+                        <input type="number" id="clouds" name="clouds"
+                               min="0" max="100" value="50"
+                               class="form-control" required>
+                        <small class="form-hint">0% = clear sky, 100% = fully overcast</small>
+                    </div>
+
+                    <h3 class="form-section-title">🕐 Temporal Features</h3>
+
+                    <div class="form-group">
+                        <label for="hour">Hour of Day</label>
+                        <select id="hour" name="hour" class="form-control" required>
+                            <option value="0">00:00 (Midnight)</option>
+                            <option value="1">01:00</option>
+                            <option value="2">02:00</option>
+                            <option value="3">03:00</option>
+                            <option value="4">04:00</option>
+                            <option value="5">05:00</option>
+                            <option value="6">06:00</option>
+                            <option value="7">07:00</option>
+                            <option value="8" selected>08:00 (Morning Rush)</option>
+                            <option value="9">09:00</option>
+                            <option value="10">10:00</option>
+                            <option value="11">11:00</option>
+                            <option value="12">12:00 (Noon)</option>
+                            <option value="13">13:00</option>
+                            <option value="14">14:00</option>
+                            <option value="15">15:00</option>
+                            <option value="16">16:00</option>
+                            <option value="17">17:00 (Evening Rush)</option>
+                            <option value="18">18:00</option>
+                            <option value="19">19:00</option>
+                            <option value="20">20:00</option>
+                            <option value="21">21:00</option>
+                            <option value="22">22:00</option>
+                            <option value="23">23:00</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="day_of_week">Day of Week</label>
+                        <select id="day_of_week" name="day_of_week" class="form-control" required>
+                            <option value="0">Monday</option>
+                            <option value="1">Tuesday</option>
+                            <option value="2">Wednesday</option>
+                            <option value="3">Thursday</option>
+                            <option value="4">Friday</option>
+                            <option value="5">Saturday</option>
+                            <option value="6">Sunday</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="month">Month</label>
+                        <select id="month" name="month" class="form-control" required>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6" selected>June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group form-group-checkbox">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="is_weekend" name="is_weekend">
+                                <span class="checkbox-custom"></span>
+                                Is Weekend
+                            </label>
+                            <small class="form-hint">Auto-set from Day of Week</small>
+                        </div>
+
+                        <div class="form-group form-group-checkbox">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="is_holiday" name="is_holiday">
+                                <span class="checkbox-custom"></span>
+                                Is Holiday
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                        🔮 Predict Traffic Volume
+                    </button>
+                </form>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel">
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing traffic patterns...</p>
+                </div>
+
+                <!-- Prediction Results -->
+                <div id="predictionResult" class="result-card" style="display: none;">
+                    <h3 class="result-title">Prediction Result</h3>
+                    <div class="result-volume">
+                        <span id="predictedVolume" class="volume-number">—</span>
+                        <span class="volume-unit">vehicles / hour</span>
+                    </div>
+
+                    <!-- Traffic Level Indicator -->
+                    <div id="trafficLevel" class="traffic-level">
+                        <div class="level-bar">
+                            <div class="level-fill" id="levelFill"></div>
+                        </div>
+                        <span class="level-label" id="levelLabel">—</span>
+                    </div>
+
+                    <!-- Input Summary -->
+                    <div class="input-summary">
+                        <h4>Input Summary</h4>
+                        <table class="summary-table">
+                            <tbody id="summaryBody">
+                                <!-- Populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Error Display -->
+                <div id="errorDisplay" class="error-card" style="display: none;">
+                    <h3>⚠️ Error</h3>
+                    <p id="errorMessage"></p>
+                </div>
+
+                <!-- Initial Placeholder -->
+                <div id="placeholder" class="placeholder-card">
+                    <div class="placeholder-icon">🚗</div>
+                    <h3>Ready to Predict</h3>
+                    <p>Fill in the form and click "Predict Traffic Volume" to see the estimated traffic flow.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    // ---- DOM References ----
+    const form = document.getElementById('predictForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const predictionResult = document.getElementById('predictionResult');
+    const errorDisplay = document.getElementById('errorDisplay');
+    const placeholder = document.getElementById('placeholder');
+    const dayOfWeekSelect = document.getElementById('day_of_week');
+    const isWeekendCheckbox = document.getElementById('is_weekend');
+
+    // ---- Auto-set "Is Weekend" from Day of Week ----
+    dayOfWeekSelect.addEventListener('change', function() {
+        const dayValue = parseInt(this.value, 10);
+        // Saturday = 5, Sunday = 6
+        isWeekendCheckbox.checked = (dayValue === 5 || dayValue === 6);
+    });
+
+    // Trigger on initial load
+    dayOfWeekSelect.dispatchEvent(new Event('change'));
+
+    // ---- Form Submission Handler ----
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        // Collect form data
+        const temp = parseFloat(document.getElementById('temp').value);
+        const rain = parseFloat(document.getElementById('rain').value);
+        const snow = parseFloat(document.getElementById('snow').value);
+        const clouds = parseInt(document.getElementById('clouds').value, 10);
+        const hour = parseInt(document.getElementById('hour').value, 10);
+        const dayOfWeek = parseInt(document.getElementById('day_of_week').value, 10);
+        const month = parseInt(document.getElementById('month').value, 10);
+        const isWeekend = (dayOfWeek === 5 || dayOfWeek === 6) ? 1 : 0;
+        const isHoliday = document.getElementById('is_holiday').checked ? 1 : 0;
+
+        // Update checkbox to match computed value
+        isWeekendCheckbox.checked = (isWeekend === 1);
+
+        const payload = {
+            temp: temp,
+            rain: rain,
+            snow: snow,
+            clouds: clouds,
+            hour: hour,
+            day_of_week: dayOfWeek,
+            month: month,
+            is_weekend: isWeekend,
+            is_holiday: isHoliday
+        };
+
+        // Show loading, hide others
+        loadingSpinner.style.display = 'flex';
+        predictionResult.style.display = 'none';
+        errorDisplay.style.display = 'none';
+        placeholder.style.display = 'none';
+        submitBtn.disabled = true;
+
+        try {
+            const response = await fetch('/api/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Prediction request failed.');
+            }
+
+            // Display prediction result
+            const volume = Math.round(data.prediction);
+            document.getElementById('predictedVolume').textContent = volume.toLocaleString();
+
+            // Determine traffic level
+            let levelLabel, levelClass, levelPercent;
+            if (volume < 2000) {
+                levelLabel = 'Low Traffic';
+                levelClass = 'level-low';
+                levelPercent = Math.max(10, (volume / 2000) * 33);
+            } else if (volume < 4500) {
+                levelLabel = 'Medium Traffic';
+                levelClass = 'level-medium';
+                levelPercent = 33 + ((volume - 2000) / 2500) * 34;
+            } else {
+                levelLabel = 'High Traffic';
+                levelClass = 'level-high';
+                levelPercent = Math.min(100, 67 + ((volume - 4500) / 2500) * 33);
+            }
+
+            const levelFill = document.getElementById('levelFill');
+            levelFill.style.width = levelPercent + '%';
+            levelFill.className = 'level-fill ' + levelClass;
+            document.getElementById('levelLabel').textContent = levelLabel;
+
+            // Populate input summary
+            const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const summaryRows = [
+                ['Temperature', temp + ' °C'],
+                ['Rainfall', rain + ' mm/h'],
+                ['Snowfall', snow + ' mm/h'],
+                ['Cloud Cover', clouds + '%'],
+                ['Hour', String(hour).padStart(2, '0') + ':00'],
+                ['Day', dayNames[dayOfWeek]],
+                ['Month', monthNames[month - 1]],
+                ['Weekend', isWeekend ? 'Yes' : 'No'],
+                ['Holiday', isHoliday ? 'Yes' : 'No']
+            ];
+
+            const summaryBody = document.getElementById('summaryBody');
+            summaryBody.innerHTML = '';
+            summaryRows.forEach(function(row) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td class="summary-label">' + row[0] + '</td><td class="summary-value">' + row[1] + '</td>';
+                summaryBody.appendChild(tr);
+            });
+
+            predictionResult.style.display = 'block';
+
+        } catch (err) {
+            document.getElementById('errorMessage').textContent = err.message;
+            errorDisplay.style.display = 'block';
+        } finally {
+            loadingSpinner.style.display = 'none';
+            submitBtn.disabled = false;
+        }
+    });
+})();
+</script>
+{% endblock %}

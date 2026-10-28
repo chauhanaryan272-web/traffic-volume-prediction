@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Home — Traffic Volume Prediction{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Traffic Volume Prediction System</h1>
+        <p class="hero-subtitle">AI-Powered Traffic Analysis for Civil Engineering</p>
+        <p class="hero-description">
+            Leverage machine learning to predict hourly traffic volumes based on weather conditions,
+            time of day, and calendar features. A data-driven approach to smarter infrastructure planning.
+        </p>
+        <a href="{{ url_for('predict') }}" class="btn btn-primary btn-lg">Get Started &rarr;</a>
+    </div>
+</section>
+
+<!-- Feature Cards Section -->
+<section class="section features-section">
+    <div class="container">
+        <h2 class="section-title">What Can You Do?</h2>
+        <div class="features-grid">
+            <!-- Feature Card 1: Predict Traffic -->
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Predict Traffic</h3>
+                <p class="feature-description">
+                    Enter weather and temporal parameters to get an instant prediction of
+                    expected traffic volume in vehicles per hour.
+                </p>
+                <a href="{{ url_for('predict') }}" class="btn btn-outline">Make a Prediction</a>
+            </div>
+
+            <!-- Feature Card 2: View Dashboard -->
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">View Dashboard</h3>
+                <p class="feature-description">
+                    Explore interactive charts showing traffic patterns by hour, day, month,
+                    and review model performance metrics.
+                </p>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Open Dashboard</a>
+            </div>
+
+            <!-- Feature Card 3: About Project -->
+            <div class="feature-card">
+                <div class="feature-icon">ℹ️</div>
+                <h3 class="feature-title">About Project</h3>
+                <p class="feature-description">
+                    Learn about the dataset, machine learning model, technologies used,
+                    and the civil engineering applications of this system.
+                </p>
+                <a href="{{ url_for('about') }}" class="btn btn-outline">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- System Overview Section -->
+<section class="section overview-section">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+        <div class="overview-grid">
+            <div class="overview-step">
+                <div class="step-number">1</div>
+                <h4>Input Parameters</h4>
+                <p>Provide weather conditions (temperature, rainfall, snowfall, cloud cover) and temporal details (hour, day, month).</p>
+            </div>
+            <div class="overview-step">
+                <div class="step-number">2</div>
+                <h4>ML Processing</h4>
+                <p>Our trained Linear Regression model processes the inputs using patterns learned from the Metro Interstate Traffic dataset.</p>
+            </div>
+            <div class="overview-step">
+                <div class="step-number">3</div>
+                <h4>Get Prediction</h4>
+                <p>Receive an instant prediction of traffic volume (vehicles/hour) along with a traffic level classification.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

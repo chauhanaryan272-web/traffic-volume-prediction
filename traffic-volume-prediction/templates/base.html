@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Traffic Volume Prediction{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                <span class="nav-icon">🚦</span> Traffic Predictor
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li>
+                    <a href="{{ url_for('home') }}"
+                       class="nav-link {% if request.endpoint == 'home' %}active{% endif %}">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('predict') }}"
+                       class="nav-link {% if request.endpoint == 'predict' %}active{% endif %}">
+                        Predict
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('dashboard') }}"
+                       class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('about') }}"
+                       class="nav-link {% if request.endpoint == 'about' %}active{% endif %}">
+                        About
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; {{ now().year if now is defined else "2025" }} Traffic Volume Prediction System &mdash; B.Tech Civil Engineering Project</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
