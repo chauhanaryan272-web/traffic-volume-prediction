@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}About — Traffic Volume Prediction{% endblock %}
+
+{% block content %}
+<section class="section about-section">
+    <div class="container">
+        <h1 class="page-title">About This Project</h1>
+        <p class="page-subtitle">
+            A machine learning–powered traffic volume prediction system developed for Civil Engineering Intelligent Transportation Systems (ITS).
+        </p>
+
+        <!-- Project Description -->
+        <div class="about-card">
+            <h2 class="about-heading">🚦 Project Overview</h2>
+            <p>
+                The <strong>Traffic Volume Prediction System</strong> uses historical traffic and meteorological data to
+                predict the hourly traffic volume on a major interstate highway corridor. By combining environmental features
+                (temperature, rainfall, snowfall, cloud cover) with cyclical temporal patterns (hour, day of week, month, holidays),
+                the system provides accurate traffic flow estimates that directly support transportation planning and operational engineering decisions.
+            </p>
+            <p>
+                This tool is designed for transportation engineers, urban planners, and ITS researchers who need
+                data-driven insights into roadway demand for pavement design, signal timing optimization, and capacity management.
+            </p>
+        </div>
+
+        <!-- Dataset Information -->
+        <div class="about-card">
+            <h2 class="about-heading">📂 Dataset</h2>
+            <p>
+                The project uses the <strong>Metro Interstate Traffic Volume</strong> dataset from the
+                <a href="https://archive.ics.uci.edu/dataset/492/metro+interstate+traffic+volume" target="_blank" rel="noopener noreferrer" style="color: var(--color-accent); text-decoration: underline;">
+                    UCI Machine Learning Repository (ID 492)
+                </a>.
+            </p>
+            <ul class="about-list">
+                <li><strong>Source Agency:</strong> Minnesota Department of Transportation (MnDOT)</li>
+                <li><strong>Location:</strong> Interstate 94 Westbound (Milepost 241, ATR Station 301), Minneapolis–St. Paul, MN</li>
+                <li><strong>Observation Span:</strong> 2012 – 2018</li>
+                <li><strong>Total Instances:</strong> 48,204 hourly observations</li>
+                <li><strong>Target Variable:</strong> Traffic volume (vehicles/hour)</li>
+                <li><strong>Key Features:</strong> Temperature, rain, snow, cloud cover, holiday status, timestamp features</li>
+            </ul>
+        </div>
+
+        <!-- Model Information -->
+        <div class="about-card">
+            <h2 class="about-heading">🤖 Machine Learning Model</h2>
+            <p>
+                The primary deployed prediction model is built using <strong>Multiple Linear Regression</strong> with a
+                <strong>StandardScaler</strong> preprocessing pipeline in <code>scikit-learn</code>, enhanced by trigonometric cyclical feature encoding.
+            </p>
+            <ul class="about-list">
+                <li><strong>Algorithm:</strong> Ordinary Least Squares (OLS) Linear Regression with Cyclical Feature Mapping</li>
+                <li><strong>Framework:</strong> scikit-learn &amp; joblib</li>
+                <li><strong>Data Splitting:</strong> 80% Chronological Training / 20% Holdout Testing (No Shuffling to prevent lookahead data leakage)</li>
+                <li><strong>Evaluation Metrics:</strong> Mean Absolute Error (MAE), Root Mean Squared Error (RMSE), Coefficient of Determination (R²)</li>
+                <li><strong>Feature Engineering:</strong> Cyclical sine and cosine transformations of hour, day-of-week, and month</li>
+            </ul>
+        </div>
+
+        <!-- Technologies Used -->
+        <div class="about-card">
+            <h2 class="about-heading">🛠️ Technologies Used</h2>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">🐍</div>
+                    <h4>Python 3.8+</h4>
+                    <p>Core programming language for data engineering, model training, and API server</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🌐</div>
+                    <h4>Flask</h4>
+                    <p>Lightweight WSGI web framework serving interactive pages and REST endpoints</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🧠</div>
+                    <h4>scikit-learn</h4>
+                    <p>Machine learning library for feature pipelines, model estimation, and metric evaluation</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">📊</div>
+                    <h4>Chart.js</h4>
+                    <p>Responsive JavaScript charting library visualizing hourly, daily, and scatter trends</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🐼</div>
+                    <h4>Pandas &amp; NumPy</h4>
+                    <p>High-performance data manipulation, cyclical math transformations, and array operations</p>
+                </div>
+                <div class="tech-item">
+                    <div class="tech-icon">🎨</div>
+                    <h4>HTML5 / CSS3 / JS</h4>
+                    <p>Semantic, responsive front-end interface built with modern CSS custom properties</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Project Structure -->
+        <div class="about-card">
+            <h2 class="about-heading">📁 Project Structure</h2>
+            <pre class="project-tree"><code>traffic-volume-prediction/
+├── app.py                             # Flask application entry point & REST API
+├── requirements.txt                   # Python package dependencies
+├── run.bat                            # One-click Windows batch launcher
+├── README.md                          # Comprehensive project documentation
+├── PROJECT_EXPLANATION_AND_VIVA_GUIDE.md # 50+ Viva Q&amp;As and theory guide
+├── data/                              # Datasets and documentation
+│   ├── DATASET_README.md
+│   ├── Metro_Interstate_Traffic_Volume.csv
+│   └── cleaned_traffic_data.csv
+├── models/                            # Serialized pipeline & metadata
+│   ├── traffic_volume_model.joblib
+│   └── model_metadata.json
+├── results/                           # Model metrics & test predictions
+│   ├── model_metrics.json
+│   └── test_predictions.csv
+├── notebooks/                         # Interactive Jupyter research notebook
+│   └── Traffic_Volume_Prediction.ipynb
+├── reports/                           # Academic technical report
+│   └── PROJECT_REPORT.md
+├── scripts/                           # Data prep & training pipelines
+│   ├── prepare_data.py
+│   └── train_model.py
+├── static/                            # CSS stylesheets and client-side JS
+│   ├── css/style.css
+│   └── js/main.js
+├── templates/                         # Jinja2 HTML templates
+│   ├── base.html
+│   ├── index.html
+│   ├── predict.html
+│   ├── dashboard.html
+│   └── about.html
+└── tests/                             # Unit & integration test suite
+    ├── __init__.py
+    ├── test_model.py
+    └── test_app.py</code></pre>
+        </div>
+
+        <!-- Civil Engineering Applications -->
+        <div class="about-card">
+            <h2 class="about-heading">🏗️ Civil Engineering Applications</h2>
+            <p>
+                Accurate traffic volume prediction is critical for numerous aspects of transportation infrastructure and ITS:
+            </p>
+            <div class="applications-grid">
+                <div class="application-item">
+                    <h4>🛣️ Road Design &amp; Capacity Planning</h4>
+                    <p>Determine required lane configuration, geometric design, and structural pavement thickness based on forecasted vehicle loads.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🚦 Signal Timing &amp; Ramp Metering</h4>
+                    <p>Calibrate adaptive traffic signal timing plans and expressway ramp meter rates to prevent breakdown of mainline traffic flow.</p>
+                </div>
+                <div class="application-item">
+                    <h4>📋 Transportation Demand Management</h4>
+                    <p>Predict periods of recurring congestion to support dynamic toll pricing, transit dispatch, and high-occupancy lane policies.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🔧 Work Zone &amp; Maintenance Scheduling</h4>
+                    <p>Schedule lane closures, resurfacing, and bridge inspections during minimum-volume windows to minimize commuter disruption.</p>
+                </div>
+                <div class="application-item">
+                    <h4>🌍 Environmental Impact Analysis</h4>
+                    <p>Estimate vehicle tailpipe emissions, greenhouse gas outputs, and noise pollution contours for urban environmental audits.</p>
+                </div>
+                <div class="application-item">
+                    <h4>💰 Economic Feasibility Studies</h4>
+                    <p>Quantify travel time savings, vehicle operating cost reductions, and benefit-cost ratios for proposed highway expansions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Information -->
+        <div class="about-card">
+            <h2 class="about-heading">👨‍🎓 Academic Details</h2>
+            <div class="team-info">
+                <p><strong>Department:</strong> Civil Engineering / Intelligent Transportation Systems</p>
+                <p><strong>Degree Program:</strong> Bachelor of Technology (B.Tech)</p>
+                <p><strong>Project Type:</strong> Capstone / Major Project</p>
+                <hr class="about-divider">
+                <p class="team-placeholder">
+                    <em>Documented, tested, and prepared for academic viva examination and demonstration.</em>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
